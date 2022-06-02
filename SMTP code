@@ -76,7 +76,7 @@ recv7=sslClientSocket.recv(1024)
 print(recv7)
 # Send message data.
 # Fill in start
-sslCLientSocket.send("Subject: {}\n\n{}".format(userSubject,msg).encode())
+ssl.send("Subject: {}\n\n{}".format(userSubject,msg).encode())
 # Fill in end
 # Message ends with a single period.
 # Fill in start
@@ -88,7 +88,7 @@ print(recv8)
 # Fill in start
 quitCMD = 'QUIT\r\n'
 sslClientSocket.send(quitCMD.encode())
-recv9 = sslCLientSocket.recv(1024)
+recv9 = ssl.recv(1024)
 print(recv9)
 
 sslClientSocket.close()
