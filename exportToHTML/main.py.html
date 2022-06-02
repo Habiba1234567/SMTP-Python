@@ -1,0 +1,106 @@
+<html>
+<head>
+<title>main.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+main.py</font>
+</center></td></tr></table>
+<pre><span class="s0">from </span><span class="s1">socket </span><span class="s0">import</span><span class="s1">*</span>
+<span class="s0">from </span><span class="s1">base64 </span><span class="s0">import </span><span class="s1">*</span>
+<span class="s0">import </span><span class="s1">ssl</span>
+<span class="s2">#Inputs from the user</span>
+<span class="s1">userEmail =input(</span><span class="s3">&quot;Enter Your Email Address: &quot;</span><span class="s1">)</span>
+<span class="s1">userPassword =input(</span><span class="s3">&quot;Enter Your Password: &quot;</span><span class="s1">)</span>
+<span class="s1">userDestinationEmail =input(</span><span class="s3">&quot;Enter Email Destination: &quot;</span><span class="s1">)</span>
+<span class="s1">userSubject =input(</span><span class="s3">&quot;Enter Subject: &quot;</span><span class="s1">)</span>
+<span class="s1">userBody =input(</span><span class="s3">&quot;Enter Your Message: &quot;</span><span class="s1">)</span>
+
+
+<span class="s1">msg = </span><span class="s3">'&lt;{}&gt;</span><span class="s0">\r\n </span><span class="s3">I love computer networks!'</span><span class="s1">.format(userBody)</span>
+<span class="s1">endmsg = </span><span class="s3">&quot;</span><span class="s0">\r\n</span><span class="s3">.</span><span class="s0">\r\n</span><span class="s3">&quot;</span>
+<span class="s2"># Choose a mail server (e.g. Google mail server) and call it mailserver</span>
+<span class="s1">mailserver = </span><span class="s3">&quot;smtp.gmail.com&quot;</span>
+<span class="s1">mailPort=</span><span class="s4">587</span>
+<span class="s2"># Create socket called clientSocket and establish a TCP connection with mailserver</span>
+<span class="s2">#Fill in start</span>
+<span class="s1">clientSocket= socket(AF_INET</span><span class="s0">,</span><span class="s1">SOCK_STREAM)</span>
+<span class="s1">clientSocket.connect((mailserver</span><span class="s0">,</span><span class="s1">mailPort))</span>
+<span class="s2">#Fill in end</span>
+<span class="s1">recv = clientSocket.recv(</span><span class="s4">1024</span><span class="s1">).decode()</span>
+<span class="s1">print(recv)</span>
+<span class="s0">if </span><span class="s1">recv[:</span><span class="s4">3</span><span class="s1">] != </span><span class="s3">'220'</span><span class="s1">:</span>
+ <span class="s1">print(</span><span class="s3">'220 reply not received from server.'</span><span class="s1">)</span>
+<span class="s2"># Send HELO command and print server response.</span>
+<span class="s1">heloCommand = </span><span class="s3">'HELO Alice</span><span class="s0">\r\n</span><span class="s3">'</span>
+<span class="s1">clientSocket.send(heloCommand.encode())</span>
+<span class="s1">recv1 = clientSocket.recv(</span><span class="s4">1024</span><span class="s1">).decode()</span>
+<span class="s1">print(recv1)</span>
+<span class="s0">if </span><span class="s1">recv1[:</span><span class="s4">3</span><span class="s1">] != </span><span class="s3">'250'</span><span class="s1">:</span>
+ <span class="s1">print(</span><span class="s3">'250 reply not received from server.'</span><span class="s1">)</span>
+
+ <span class="s1">strtlscmd=</span><span class="s3">&quot;STARTTLS</span><span class="s0">\r\n</span><span class="s3">&quot;</span><span class="s1">.encode()</span>
+ <span class="s1">clientSocket.send(strtlscmd)</span>
+ <span class="s1">recv2=clientSocket.recv(</span><span class="s4">1024</span><span class="s1">)</span>
+
+ <span class="s1">sslClientSocket= ssl.wrap_socket(clientSocket)</span>
+
+ <span class="s1">emailA= b64encode(userEmail.encode())</span>
+ <span class="s1">emailP= b64encode(userPassword.encode())</span>
+
+ <span class="s1">authorizationCMD= </span><span class="s3">&quot;AUTH LOGIN</span><span class="s0">\r\n</span><span class="s3">&quot;</span>
+
+ <span class="s1">sslClientSocket.send(authorizationCMD.encode())</span>
+ <span class="s1">recv2= sslClientSocket.recv(</span><span class="s4">1024</span><span class="s1">)</span>
+ <span class="s1">print(recv2)</span>
+
+ <span class="s1">sslClientSocket.send(emailA+</span><span class="s3">&quot;</span><span class="s0">\r\n</span><span class="s3">&quot;</span><span class="s1">.encode())</span>
+ <span class="s1">recv3= sslClientSocket.recv(</span><span class="s4">1024</span><span class="s1">)</span>
+ <span class="s1">print(recv3)</span>
+
+ <span class="s1">sslClientSocket.send(emailP+</span><span class="s3">&quot;</span><span class="s0">\r\n</span><span class="s3">&quot;</span><span class="s1">.encode())</span>
+ <span class="s1">recv4= sslClientSocket.recv(</span><span class="s4">1024</span><span class="s1">)</span>
+ <span class="s1">print(recv4)</span>
+
+<span class="s2"># Send MAIL FROM command and print server response.</span>
+<span class="s2"># Fill in start</span>
+<span class="s1">mailFrom= </span><span class="s3">&quot;Mail from: &lt;{}&gt;</span><span class="s0">\r\n</span><span class="s3">&quot;</span><span class="s1">.format(userDestinationEmail)</span>
+<span class="s1">sslClientSocket.send(mailFrom.encode())</span>
+<span class="s1">recv5=sslClientSocket.recv(</span><span class="s4">1024</span><span class="s1">)</span>
+<span class="s1">print(recv5)</span>
+<span class="s2"># Fill in end</span>
+<span class="s2"># Send RCPT TO command and print server response.</span>
+<span class="s2"># Fill in start</span>
+<span class="s1">rcptto=</span><span class="s3">&quot;RCPT TO: &lt;{}&gt;</span><span class="s0">\r\n</span><span class="s3">&quot;</span><span class="s1">.format(userDestinationEmail)</span>
+<span class="s1">sslClientSocket.send(rcptto.encode())</span>
+<span class="s1">recv6= sslClientSocket.recv(</span><span class="s4">1024</span><span class="s1">)</span>
+<span class="s1">print(recv6)</span>
+<span class="s2"># Fill in end</span>
+<span class="s2"># Send DATA command and print server response.</span>
+<span class="s2"># Fill in start</span>
+<span class="s1">data=</span><span class="s3">'DATA</span><span class="s0">\r\n</span><span class="s3">'</span>
+<span class="s1">sslClientSocket.send(data.encode())</span>
+<span class="s1">recv7=sslClientSocket.recv(</span><span class="s4">1024</span><span class="s1">)</span>
+<span class="s1">print(recv7)</span>
+<span class="s2"># Fill in end</span>
+<span class="s2"># Send message data.</span>
+<span class="s2"># Fill in start</span>
+<span class="s2"># Fill in end</span>
+<span class="s2"># Message ends with a single period.</span>
+<span class="s2"># Fill in start</span>
+<span class="s2"># Fill in end</span>
+<span class="s2"># Send QUIT command and get server response.</span>
+<span class="s2"># Fill in start</span>
+<span class="s2"># Fill in end</span></pre>
+</body>
+</html>
